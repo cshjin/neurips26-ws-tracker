@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NeurIPS 2026 Workshop Tracker</title>
+<meta name="description" content="Community-maintained tracker for all 102 accepted NeurIPS 2026 workshops: deadlines, page limits, low-effort submission tracks, and links.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗓️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#F6F5FB;
+    --surface:#FFFFFF;
+    --surface-alt:#EFEEF9;
+    --ink:#1B1A2B;
+    --muted:#6B6A82;
+    --border:#E2E1EE;
+    --accent:#4F46E5;
+    --accent-ink:#FFFFFF;
+    --crit:#B3261E;
+    --crit-bg:#FBE7E4;
+    --crit-border:#EFC3BE;
+    --warn:#8A5A00;
+    --warn-bg:#FBEEDA;
+    --warn-border:#EDD3A0;
+    --ok:#1D7A4C;
+    --ok-bg:#E1F3E9;
+    --ok-border:#BFE3CD;
+    --unk:#6B6A82;
+    --unk-bg:#ECEBF5;
+    --unk-border:#D8D6EA;
+    --shadow:0 1px 2px rgba(27,26,43,.06), 0 10px 28px -14px rgba(27,26,43,.22);
+    --focus:#4F46E5;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#131220;
+      --surface:#1B1A2B;
+      --surface-alt:#211F33;
+      --ink:#EDEBF7;
+      --muted:#9F9DB8;
+      --border:#302E45;
+      --accent:#A79CFF;
+      --accent-ink:#131220;
+      --crit:#F1968A;
+      --crit-bg:#3A2027;
+      --crit-border:#5C2E32;
+      --warn:#E7BE73;
+      --warn-bg:#3A2E18;
+      --warn-border:#5A4720;
+      --ok:#7ED3A6;
+      --ok-bg:#17301F;
+      --ok-border:#245134;
+      --unk:#9F9DB8;
+      --unk-bg:#262438;
+      --unk-border:#37344C;
+      --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
+      --focus:#A79CFF;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#131220;
+    --surface:#1B1A2B;
+    --surface-alt:#211F33;
+    --ink:#EDEBF7;
+    --muted:#9F9DB8;
+    --border:#302E45;
+    --accent:#A79CFF;
+    --accent-ink:#131220;
+    --crit:#F1968A;
+    --crit-bg:#3A2027;
+    --crit-border:#5C2E32;
+    --warn:#E7BE73;
+    --warn-bg:#3A2E18;
+    --warn-border:#5A4720;
+    --ok:#7ED3A6;
+    --ok-bg:#17301F;
+    --ok-border:#245134;
+    --unk:#9F9DB8;
+    --unk-bg:#262438;
+    --unk-border:#37344C;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
+    --focus:#A79CFF;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent); text-decoration-color:var(--border);}
+  ::selection{background:var(--accent); color:var(--accent-ink);}
+  :focus-visible{outline:2px solid var(--focus); outline-offset:2px;}
+
+  .wrap{
+    max-width:1220px;
+    margin:0 auto;
+    padding:2.25rem 1.5rem 4rem;
+  }
+
+  header.top{
+    display:flex;
+    flex-direction:column;
+    gap:.65rem;
+    margin-bottom:1.6rem;
+  }
+  .eyebrow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.5rem 1rem;
+    align-items:baseline;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.72rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .eyebrow a{ color:var(--muted); }
+  .eyebrow a:hover{ color:var(--accent); }
+  h1{
+    font-family:"Instrument Serif", Georgia, serif;
+    font-weight:400;
+    font-style:normal;
+    font-size:clamp(1.9rem, 3.4vw, 2.6rem);
+    margin:0;
+    text-wrap:balance;
+    letter-spacing:.005em;
+  }
+  h1 em{ font-style:italic; color:var(--accent); }
+  .sub{
+    color:var(--muted);
+    font-size:.95rem;
+    max-width:72ch;
+  }
+  .sub a{ color:var(--muted); text-decoration-color:var(--muted); }
+  .sub a:hover{ color:var(--accent); }
+
+  .statline{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.5rem 1.6rem;
+    margin-top:.4rem;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.82rem;
+  }
+  .statline .stat b{
+    font-variant-numeric:tabular-nums;
+    color:var(--ink);
+  }
+  .statline .stat{ color:var(--muted); }
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+  }
+
+  .controls{
+    padding:1rem 1.1rem;
+    margin-bottom:1.1rem;
+    display:flex;
+    flex-wrap:wrap;
+    gap:.85rem 1.4rem;
+    align-items:center;
+  }
+  .field-group{ display:flex; flex-direction:column; gap:.3rem; }
+  .field-label{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.68rem;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  input[type="search"]{
+    font:inherit;
+    font-size:.9rem;
+    padding:.5rem .7rem;
+    border-radius:9px;
+    border:1px solid var(--border);
+    background:var(--surface-alt);
+    color:var(--ink);
+    min-width:220px;
+  }
+  .chipset{ display:flex; flex-wrap:wrap; gap:.4rem; }
+  .chip{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.78rem;
+    padding:.38rem .72rem;
+    border-radius:999px;
+    border:1px solid var(--border);
+    background:var(--surface-alt);
+    color:var(--muted);
+    cursor:pointer;
+    user-select:none;
+    transition:background .12s ease, color .12s ease, border-color .12s ease;
+    white-space:nowrap;
+  }
+  .chip:hover{ border-color:var(--accent); color:var(--ink); }
+  .chip.active{
+    background:var(--accent);
+    color:var(--accent-ink);
+    border-color:var(--accent);
+  }
+  .toggle-row{
+    display:flex; align-items:center; gap:.5rem;
+    font-size:.85rem;
+    color:var(--muted);
+  }
+  .toggle-row input{ accent-color:var(--accent); width:15px; height:15px; }
+
+  .table-shell{
+    overflow-x:auto;
+    border-radius:14px;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:920px;
+    font-size:.87rem;
+  }
+  thead th{
+    text-align:left;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.68rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+    background:var(--surface-alt);
+    padding:.7rem .85rem;
+    position:sticky;
+    top:0;
+    border-bottom:1px solid var(--border);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  thead th:hover{ color:var(--ink); }
+  thead th.active-sort{ color:var(--accent); }
+  tbody tr{
+    border-bottom:1px solid var(--border);
+    transition:background .12s ease;
+  }
+  tbody tr:hover{ background:var(--surface-alt); }
+  tbody tr:last-child{ border-bottom:none; }
+  td{
+    padding:.7rem .85rem;
+    vertical-align:top;
+    border-left:3px solid transparent;
+  }
+  tr[data-urgency="crit"] td:first-child{ border-left-color:var(--crit); }
+  tr[data-urgency="warn"] td:first-child{ border-left-color:var(--warn); }
+  tr[data-urgency="ok"] td:first-child{ border-left-color:var(--ok); }
+  tr[data-urgency="unk"] td:first-child{ border-left-color:var(--unk); }
+  tr[data-urgency="past"] td:first-child{ border-left-color:var(--border); }
+  tr[data-urgency="past"]{ opacity:.55; }
+
+  .wname{ font-weight:600; }
+  .wname a{ color:inherit; text-decoration:none; border-bottom:1px solid var(--border); }
+  .wname a:hover{ color:var(--accent); border-bottom-color:var(--accent); }
+  .wcity{
+    display:inline-block;
+    margin-top:.2rem;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.68rem;
+    color:var(--muted);
+    letter-spacing:.04em;
+  }
+  .ddate{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .pill{
+    display:inline-block;
+    margin-top:.3rem;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.72rem;
+    padding:.14rem .5rem;
+    border-radius:999px;
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .pill.crit{ background:var(--crit-bg); color:var(--crit); border:1px solid var(--crit-border); }
+  .pill.warn{ background:var(--warn-bg); color:var(--warn); border:1px solid var(--warn-border); }
+  .pill.ok{ background:var(--ok-bg); color:var(--ok); border:1px solid var(--ok-border); }
+  .pill.unk, .pill.past{ background:var(--unk-bg); color:var(--unk); border:1px solid var(--unk-border); }
+
+  .track{ font-weight:500; display:block; }
+  .track.dim{ color:var(--muted); font-weight:400; }
+  .tracknote{ color:var(--muted); font-size:.8rem; display:block; margin-top:.15rem; }
+  .scope{ color:var(--muted); max-width:32ch; }
+  .status-chip{
+    display:inline-block;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.72rem;
+    padding:.14rem .5rem;
+    border-radius:999px;
+    background:var(--surface-alt);
+    border:1px solid var(--border);
+    color:var(--muted);
+    white-space:nowrap;
+  }
+
+  .empty{
+    padding:2.4rem 1rem;
+    text-align:center;
+    color:var(--muted);
+    font-size:.9rem;
+  }
+
+  footer{
+    margin-top:1.6rem;
+    color:var(--muted);
+    font-size:.8rem;
+    max-width:78ch;
+  }
+  footer p{ margin:.35rem 0; }
+  footer code{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    background:var(--surface-alt);
+    padding:.05rem .35rem;
+    border-radius:5px;
+    border:1px solid var(--border);
+  }
+  footer a{ color:var(--accent); }
+
+  @media (max-width:640px){
+    .controls{ padding:.9rem; }
+    input[type="search"]{ min-width:160px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <span class="eyebrow">
+      <span>NeurIPS 2026 &middot; Sydney / Paris / Atlanta</span>
+      <a href="https://blog.neurips.cc/2026/08/10/announcing-the-neurips-2026-workshops/" target="_blank" rel="noopener">official announcement ↗</a>
+      <a href="https://github.com/cshjin/neurips26-ws-tracker" target="_blank" rel="noopener" id="repoLink">source & contribute ↗</a>
+    </span>
+    <h1>All 102 NeurIPS 2026 <em>workshops</em>, in one table.</h1>
+    <p class="sub">Deadlines, page limits, and which CFPs have a low-effort submission track (position papers, tiny papers, extended abstracts, or an explicit welcome for negative / preliminary / work-in-progress results). Community-maintained &mdash; see <a href="README.md">README</a> for how to fix or add an entry.</p>
+    <div class="statline" id="statline"></div>
+  </header>
+
+  <div class="panel controls">
+    <div class="field-group">
+      <label class="field-label" for="search">Search</label>
+      <input type="search" id="search" placeholder="name or topic&hellip;">
+    </div>
+    <div class="field-group">
+      <span class="field-label">Deadline</span>
+      <div class="chipset" id="urgencyChips">
+        <button class="chip active" data-urgency="all">All</button>
+        <button class="chip" data-urgency="crit">≤3 days</button>
+        <button class="chip" data-urgency="warn">4&ndash;9 days</button>
+        <button class="chip" data-urgency="ok">10+ days</button>
+        <button class="chip" data-urgency="unk">TBD</button>
+      </div>
+    </div>
+    <div class="field-group">
+      <span class="field-label">City</span>
+      <div class="chipset" id="regionChips">
+        <button class="chip active" data-region="all">All</button>
+        <button class="chip" data-region="Sydney">Sydney</button>
+        <button class="chip" data-region="Paris">Paris</button>
+        <button class="chip" data-region="Atlanta">Atlanta</button>
+      </div>
+    </div>
+    <div class="field-group">
+      <span class="field-label">Low-effort track</span>
+      <div class="chipset" id="effortChips">
+        <button class="chip active" data-effort="all">All</button>
+        <button class="chip" data-effort="yes">Confirmed yes</button>
+        <button class="chip" data-effort="unknown">Unconfirmed</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel table-shell">
+    <table id="cfpTable">
+      <thead>
+        <tr>
+          <th data-key="deadline" class="active-sort">Deadline ▾</th>
+          <th data-key="name">Workshop</th>
+          <th data-key="pages">Submission tracks</th>
+          <th data-key="scope">Scope</th>
+          <th data-key="status">Status</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="emptyState" style="display:none;">No workshops match these filters &mdash; try widening them.</div>
+  </div>
+
+  <footer>
+    <p>Data snapshot last checked <strong id="lastChecked">&mdash;</strong> by reading each workshop's own site. Most deadlines are <strong>AoE (Anywhere on Earth)</strong>; always confirm on the workshop's own page before submitting &mdash; CFPs get extended or edited without notice, and several pages had no CFP text live yet at last check (shown as <span class="pill unk">TBD</span>).</p>
+    <p>"Low-effort track" means the CFP itself explicitly allows a position / opinion / survey / tiny / extended-abstract / demo submission, or explicitly welcomes negative, preliminary, or work-in-progress results &mdash; it is not a claim that review will be lenient.</p>
+    <p>Found a stale deadline, a missing workshop, or want to add acceptance/notification info once decisions go out? Edit <code>data.json</code> and open a pull request &mdash; see <a href="README.md">README</a>.</p>
+  </footer>
+
+</div>
+
+<script>
+async function boot(){
+  const res = await fetch("data.json", {cache:"no-store"});
+  const payload = await res.json();
+  const DATA = payload.workshops;
+  document.getElementById("lastChecked").textContent = payload.meta.lastChecked;
+
+  const $ = (sel, el=document) => el.querySelector(sel);
+  const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+
+  function daysLeft(iso){
+    if(!iso) return null;
+    const now = new Date();
+    const dl = new Date(iso + "T23:59:00");
+    return Math.ceil((dl - now) / 86400000);
+  }
+  function urgencyOf(w){
+    if(!w.deadline) return "unk";
+    const d = daysLeft(w.deadline);
+    if(d < 0) return "past";
+    if(d <= 3) return "crit";
+    if(d <= 9) return "warn";
+    return "ok";
+  }
+  function fmtDate(iso){
+    if(!iso) return "TBD";
+    const d = new Date(iso + "T00:00:00");
+    return d.toLocaleDateString("en-US", {month:"short", day:"numeric"});
+  }
+  function fmtDays(w){
+    if(!w.deadline) return "TBD";
+    const d = daysLeft(w.deadline);
+    if(d < 0) return "passed";
+    if(d === 0) return "today";
+    if(d === 1) return "1 day";
+    return d + " days";
+  }
+  function escapeHtml(s){
+    return (s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+
+  let state = { q:"", urgency:"all", region:"all", effort:"all", sortKey:"deadline", sortDir:1 };
+
+  function applyFilters(){
+    let rows = DATA.slice();
+    if(state.q){
+      const q = state.q.toLowerCase();
+      rows = rows.filter(r => r.name.toLowerCase().includes(q) || r.scope.toLowerCase().includes(q));
+    }
+    if(state.urgency !== "all"){
+      rows = rows.filter(r => urgencyOf(r) === state.urgency);
+    }
+    if(state.region !== "all"){
+      rows = rows.filter(r => r.city === state.region);
+    }
+    if(state.effort === "yes"){
+      rows = rows.filter(r => r.lowEffort === true);
+    } else if(state.effort === "unknown"){
+      rows = rows.filter(r => r.lowEffort === null);
+    }
+    rows.sort((a,b) => {
+      let av, bv;
+      if(state.sortKey === "deadline"){
+        av = a.deadline ? daysLeft(a.deadline) : Infinity;
+        bv = b.deadline ? daysLeft(b.deadline) : Infinity;
+      } else if(state.sortKey === "pages"){
+        av = a.lowEffort === true ? 0 : (a.lowEffort === null ? 1 : 2);
+        bv = b.lowEffort === true ? 0 : (b.lowEffort === null ? 1 : 2);
+      } else {
+        av = (a[state.sortKey] || "").toString().toLowerCase();
+        bv = (b[state.sortKey] || "").toString().toLowerCase();
+      }
+      if(av < bv) return -1 * state.sortDir;
+      if(av > bv) return 1 * state.sortDir;
+      return 0;
+    });
+    return rows;
+  }
+
+  function render(){
+    const rows = applyFilters();
+    const tbody = $("#tbody");
+    tbody.innerHTML = "";
+    $("#emptyState").style.display = rows.length ? "none" : "block";
+
+    rows.forEach(r => {
+      const urg = urgencyOf(r);
+      const tr = document.createElement("tr");
+      tr.dataset.urgency = urg;
+      const trackClass = r.lowEffort ? "track" : "track dim";
+      const trackLabel = r.pages || (r.lowEffort === false ? "full papers only" : "not yet confirmed");
+      tr.innerHTML = `
+        <td>
+          <span class="ddate">${fmtDate(r.deadline)}</span><br>
+          <span class="pill ${urg}">${fmtDays(r)}</span>
+        </td>
+        <td>
+          <span class="wname"><a href="${r.url}" target="_blank" rel="noopener">${escapeHtml(r.name)}</a></span><br>
+          <span class="wcity">${r.city.toUpperCase()}</span>
+        </td>
+        <td>
+          <span class="${trackClass}">${escapeHtml(trackLabel)}</span>
+          ${r.lowEffortNote ? `<span class="tracknote">${escapeHtml(r.lowEffortNote)}</span>` : ""}
+        </td>
+        <td class="scope">${escapeHtml(r.scope)}</td>
+        <td><span class="status-chip">${escapeHtml(r.status || "CFP open")}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    const total = DATA.length;
+    const shown = rows.length;
+    const confirmed = DATA.filter(r => r.lowEffort === true).length;
+    const upcoming = DATA.filter(r => r.deadline && daysLeft(r.deadline) >= 0).sort((a,b)=>daysLeft(a.deadline)-daysLeft(b.deadline))[0];
+    $("#statline").innerHTML = `
+      <span class="stat"><b>${total}</b> workshops tracked</span>
+      <span class="stat"><b>${confirmed}</b> with a confirmed low-effort track</span>
+      <span class="stat">showing <b>${shown}</b></span>
+      ${upcoming ? `<span class="stat">next deadline in <b>${fmtDays(upcoming)}</b> (${escapeHtml(upcoming.name)})</span>` : ""}
+    `;
+  }
+
+  $("#search").addEventListener("input", e => { state.q = e.target.value; render(); });
+
+  $$("#urgencyChips .chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      $$("#urgencyChips .chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      state.urgency = chip.dataset.urgency;
+      render();
+    });
+  });
+  $$("#regionChips .chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      $$("#regionChips .chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      state.region = chip.dataset.region;
+      render();
+    });
+  });
+  $$("#effortChips .chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      $$("#effortChips .chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      state.effort = chip.dataset.effort;
+      render();
+    });
+  });
+  $$("thead th[data-key]").forEach(th => {
+    th.addEventListener("click", () => {
+      const key = th.dataset.key;
+      if(state.sortKey === key){ state.sortDir *= -1; }
+      else { state.sortKey = key; state.sortDir = 1; }
+      $$("thead th").forEach(h => { h.classList.remove("active-sort"); h.textContent = h.textContent.replace(/ [▾▴]$/, ""); });
+      th.classList.add("active-sort");
+      th.textContent = th.textContent + (state.sortDir === 1 ? " ▾" : " ▴");
+      render();
+    });
+  });
+
+  render();
+}
+boot();
+</script>
+</body>
+</html>
