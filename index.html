@@ -400,9 +400,16 @@ async function boot(){
 
   function daysLeft(iso){
     if(!iso) return null;
+    // Compare whole local calendar days, not exact timestamps: subtracting
+    // "now" from "deadline 23:59" and dividing by 86400000 rounds a
+    // just-passed deadline (e.g. yesterday) to JS's -0, and -0 < 0 is
+    // false while -0 === 0 is true — so it silently displayed as "today"
+    // for the entire day after it actually passed.
     const now = new Date();
-    const dl = new Date(iso + "T23:59:00");
-    return Math.ceil((dl - now) / 86400000);
+    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const [y, m, d] = iso.split("-").map(Number);
+    const deadlineMidnight = new Date(y, m - 1, d);
+    return Math.round((deadlineMidnight - todayMidnight) / 86400000);
   }
   function urgencyOf(w){
     if(!w.deadline) return "unk";
