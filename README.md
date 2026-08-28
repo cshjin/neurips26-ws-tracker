@@ -37,7 +37,7 @@ Each workshop object:
 | `city` | `Sydney` \| `Paris` \| `Atlanta` (NeurIPS 2026 runs across three locations) |
 | `deadline` | Submission deadline, `YYYY-MM-DD`, or `null` if not yet posted. Assume **AoE** unless the workshop's own CFP says otherwise. |
 | `pages` | Free-text summary of tracks/page limits, e.g. `"9pp full / 4pp short"` |
-| `lowEffort` | `true` = CFP confirmed to have a position/tiny/extended-abstract/demo track or explicitly welcomes negative/WIP results. `false` = checked, only full experimental papers accepted. `null` = not yet confirmed (page didn't load, or CFP wasn't live yet at last check). |
+| `lowEffort` | `true` = the CFP has a position/tiny/extended-abstract/demo track or explicitly welcomes negative/WIP results. `false` = checked, only full experimental papers accepted. `null` = no such track found (page didn't load, or the CFP wasn't live yet at last check). |
 | `lowEffortNote` | One-line description of which track qualifies |
 | `scope` | One-line topic summary |
 | `status` | Lifecycle status. Currently always `"CFP open"` — intended to be updated to things like `"Reviewing"`, `"Notifications out"`, `"Accepted"`, `"Program posted"` as each workshop's cycle progresses (see Roadmap). |
@@ -67,7 +67,7 @@ python3 .github/scripts/validate_data.py
 ## Caveats
 
 - CFPs get extended or edited without notice. This tracker reflects a **snapshot**, not a live feed — always confirm on the workshop's own page before submitting.
-- A handful of workshop sites had no CFP text live yet, or returned nothing on fetch, at last check. Those show up as `TBD` / "Unconfirmed" in the UI rather than being guessed at.
+- A handful of workshop sites had no CFP text live yet, or returned nothing on fetch, at last check. Those show up as `TBD` / "Not found" in the UI rather than being guessed at.
 - "Low-effort track" describes what the CFP *allows*, not what will get accepted — reviewers still judge submissions on merit.
 
 ## License

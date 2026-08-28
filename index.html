@@ -379,8 +379,9 @@
       <span class="field-label">Low-effort track</span>
       <div class="chipset" id="effortChips">
         <button class="chip active" data-effort="all">All</button>
-        <button class="chip" data-effort="yes">Confirmed yes</button>
-        <button class="chip" data-effort="unknown">Unconfirmed</button>
+        <button class="chip" data-effort="yes">Has one</button>
+        <button class="chip" data-effort="no">Full papers only</button>
+        <button class="chip" data-effort="unknown">Not found</button>
       </div>
     </div>
   </div>
@@ -466,6 +467,8 @@ async function boot(){
     }
     if(state.effort === "yes"){
       rows = rows.filter(r => r.lowEffort === true);
+    } else if(state.effort === "no"){
+      rows = rows.filter(r => r.lowEffort === false);
     } else if(state.effort === "unknown"){
       rows = rows.filter(r => r.lowEffort === null);
     }
@@ -499,7 +502,7 @@ async function boot(){
       const tr = document.createElement("tr");
       tr.dataset.urgency = urg;
       const trackClass = r.lowEffort ? "track" : "track dim";
-      const trackLabel = r.pages || (r.lowEffort === false ? "full papers only" : "not yet confirmed");
+      const trackLabel = r.pages || (r.lowEffort === false ? "full papers only" : "no track found");
       tr.innerHTML = `
         <td>
           <span class="ddate">${fmtDate(r.deadline)}</span><br>
@@ -521,11 +524,11 @@ async function boot(){
 
     const total = DATA.length;
     const shown = rows.length;
-    const confirmed = DATA.filter(r => r.lowEffort === true).length;
+    const withTrack = DATA.filter(r => r.lowEffort === true).length;
     const upcoming = DATA.filter(r => r.deadline && daysLeft(r.deadline) >= 0).sort((a,b)=>daysLeft(a.deadline)-daysLeft(b.deadline))[0];
     $("#statline").innerHTML = `
       <span class="stat"><b>${total}</b> workshops tracked</span>
-      <span class="stat"><b>${confirmed}</b> with a confirmed low-effort track</span>
+      <span class="stat"><b>${withTrack}</b> with a low-effort track</span>
       <span class="stat">showing <b>${shown}</b></span>
       ${upcoming ? `<span class="stat">next deadline in <b>${fmtDays(upcoming)}</b> (${escapeHtml(upcoming.name)})</span>` : ""}
     `;
@@ -570,6 +573,15 @@ async function boot(){
   });
 
   render();
+
+  // Deadlines are static, but "days left" is computed from the viewer's
+  // clock at render time — so a tab left open for a while would otherwise
+  // show a stale countdown. Recompute periodically and whenever the tab
+  // becomes visible again.
+  setInterval(render, 30 * 60 * 1000);
+  document.addEventListener("visibilitychange", () => {
+    if(document.visibilityState === "visible") render();
+  });
 }
 boot();
 </script>
