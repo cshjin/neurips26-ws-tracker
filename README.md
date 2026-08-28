@@ -1,6 +1,6 @@
 # NeurIPS 2026 Workshop Tracker
 
-Community-maintained tracker for all 102 accepted NeurIPS 2026 workshops (Sydney, Paris, Atlanta): submission deadlines, page limits, and which CFPs have a low-effort submission track.
+Community-maintained tracker for all 102 accepted NeurIPS 2026 workshops (Sydney, Paris, Atlanta): submission deadlines, page limits, submission tracks, and topics.
 
 - Live site: https://cshjin.github.io/neurips26-ws-tracker/
 - Data: [`data.json`](data.json)
