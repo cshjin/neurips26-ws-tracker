@@ -231,6 +231,108 @@
   }
   .toggle-row input{ accent-color:var(--accent); width:15px; height:15px; }
 
+  .dropdown{ position:relative; }
+  .dropdown-trigger{
+    font:inherit;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.82rem;
+    padding:.5rem .7rem;
+    border-radius:9px;
+    border:1px solid var(--border);
+    background:var(--surface-alt);
+    color:var(--ink);
+    cursor:pointer;
+    min-width:170px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:.6rem;
+  }
+  .dropdown-trigger:hover{ border-color:var(--accent); }
+  .dropdown-trigger[aria-expanded="true"]{ border-color:var(--accent); }
+  .dropdown-panel{
+    position:absolute;
+    top:calc(100% + 6px);
+    left:0;
+    z-index:20;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    padding:.4rem;
+    min-width:280px;
+    max-height:320px;
+    overflow-y:auto;
+  }
+  .dropdown-panel[hidden]{ display:none; }
+  .dropdown-item{
+    display:flex;
+    align-items:center;
+    gap:.55rem;
+    padding:.34rem .45rem;
+    border-radius:6px;
+    font-size:.85rem;
+    cursor:pointer;
+  }
+  .dropdown-item:hover{ background:var(--surface-alt); }
+  .dropdown-item input{ accent-color:var(--accent); width:15px; height:15px; flex:none; }
+  .dropdown-item .topic-count{
+    margin-left:auto;
+    color:var(--muted);
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.72rem;
+    font-variant-numeric:tabular-nums;
+  }
+  .dropdown-actions{
+    display:flex;
+    justify-content:flex-end;
+    padding:.35rem .45rem 0;
+    margin-top:.3rem;
+    border-top:1px solid var(--border);
+  }
+  .dropdown-actions button{
+    font:inherit;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.72rem;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--accent);
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:.2rem .3rem;
+  }
+
+  .expand-toggle{
+    display:inline-block;
+    width:.8em;
+    color:var(--muted);
+    font-size:.72rem;
+    transition:transform .15s ease;
+  }
+  .expand-toggle.open{ transform:rotate(90deg); }
+  tr.ws-row{ cursor:pointer; }
+  tr.topics-row td{
+    padding-top:0;
+    padding-bottom:.85rem;
+    background:var(--surface-alt);
+  }
+  .topic-pills{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.4rem;
+    padding-top:.25rem;
+  }
+  .topic-pill{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.72rem;
+    padding:.2rem .55rem;
+    border-radius:999px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--ink);
+  }
+
   .table-shell{
     overflow-x:auto;
     border-radius:14px;
@@ -389,6 +491,16 @@
         <button class="chip" data-region="Atlanta">Atlanta</button>
       </div>
     </div>
+    <div class="field-group">
+      <span class="field-label">Topics</span>
+      <div class="dropdown" id="topicsDropdown">
+        <button type="button" class="dropdown-trigger" id="topicsTrigger" aria-haspopup="true" aria-expanded="false">
+          <span id="topicsTriggerLabel">All topics</span>
+          <span aria-hidden="true">▾</span>
+        </button>
+        <div class="dropdown-panel" id="topicsPanel" hidden></div>
+      </div>
+    </div>
   </div>
 
   <div class="panel table-shell">
@@ -496,19 +608,27 @@ async function boot(){
     return (s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   }
 
-  let state = { q:"", urgency:"all", region:"all", sortKey:"deadline", sortDir:1 };
+  let state = { q:"", urgency:"all", region:"all", topics:new Set(), sortKey:"deadline", sortDir:1 };
+  const expanded = new Set();
 
   function applyFilters(){
     let rows = DATA.slice();
     if(state.q){
       const q = state.q.toLowerCase();
-      rows = rows.filter(r => r.name.toLowerCase().includes(q) || r.scope.toLowerCase().includes(q));
+      rows = rows.filter(r =>
+        r.name.toLowerCase().includes(q) ||
+        r.scope.toLowerCase().includes(q) ||
+        (r.topics || []).some(t => t.toLowerCase().includes(q))
+      );
     }
     if(state.urgency !== "all"){
       rows = rows.filter(r => urgencyOf(r) === state.urgency);
     }
     if(state.region !== "all"){
       rows = rows.filter(r => r.city === state.region);
+    }
+    if(state.topics.size > 0){
+      rows = rows.filter(r => (r.topics || []).some(t => state.topics.has(t)));
     }
     rows.sort((a,b) => {
       let av, bv;
@@ -537,7 +657,9 @@ async function boot(){
 
     rows.forEach(r => {
       const urg = urgencyOf(r);
+      const isOpen = expanded.has(r.url);
       const tr = document.createElement("tr");
+      tr.className = "ws-row";
       tr.dataset.urgency = urg;
       const trackClass = r.lowEffort ? "track" : "track dim";
       const trackLabel = r.pages || (r.lowEffort === false ? "full papers only" : "no track found");
@@ -547,6 +669,7 @@ async function boot(){
           <span class="pill ${urg}">${fmtDays(r)}</span>
         </td>
         <td>
+          <span class="expand-toggle${isOpen ? " open" : ""}" aria-hidden="true">▸</span>
           <span class="wname"><a href="${r.url}" target="_blank" rel="noopener">${escapeHtml(r.name)}</a></span><br>
           <span class="wcity">${r.city.toUpperCase()}</span>
         </td>
@@ -556,7 +679,20 @@ async function boot(){
         </td>
         <td class="scope">${escapeHtml(r.scope)}</td>
       `;
+      tr.addEventListener("click", (e) => {
+        if(e.target.closest("a")) return;
+        if(expanded.has(r.url)) expanded.delete(r.url); else expanded.add(r.url);
+        render();
+      });
       tbody.appendChild(tr);
+
+      if(isOpen){
+        const topicsTr = document.createElement("tr");
+        topicsTr.className = "topics-row";
+        const pills = (r.topics || []).map(t => `<span class="topic-pill">${escapeHtml(t)}</span>`).join("");
+        topicsTr.innerHTML = `<td colspan="4"><div class="topic-pills">${pills}</div></td>`;
+        tbody.appendChild(topicsTr);
+      }
     });
 
     const total = DATA.length;
@@ -587,6 +723,69 @@ async function boot(){
       render();
     });
   });
+
+  (function initTopicsDropdown(){
+    const allTopics = payload.meta.topics || [];
+    const trigger = $("#topicsTrigger");
+    const label = $("#topicsTriggerLabel");
+    const panel = $("#topicsPanel");
+
+    const counts = {};
+    allTopics.forEach(t => { counts[t] = DATA.filter(r => (r.topics || []).includes(t)).length; });
+
+    panel.innerHTML = allTopics.map(t => `
+      <label class="dropdown-item">
+        <input type="checkbox" value="${escapeHtml(t)}">
+        <span>${escapeHtml(t)}</span>
+        <span class="topic-count">${counts[t]}</span>
+      </label>
+    `).join("") + `
+      <div class="dropdown-actions">
+        <button type="button" id="topicsClearBtn">Clear</button>
+      </div>
+    `;
+
+    function updateLabel(){
+      label.textContent = state.topics.size === 0
+        ? "All topics"
+        : `${state.topics.size} topic${state.topics.size > 1 ? "s" : ""}`;
+    }
+
+    function closePanel(){
+      panel.setAttribute("hidden", "");
+      trigger.setAttribute("aria-expanded", "false");
+    }
+    function openPanel(){
+      panel.removeAttribute("hidden");
+      trigger.setAttribute("aria-expanded", "true");
+    }
+
+    trigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if(panel.hasAttribute("hidden")) openPanel(); else closePanel();
+    });
+    document.addEventListener("click", (e) => {
+      if(!$("#topicsDropdown").contains(e.target)) closePanel();
+    });
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape") closePanel();
+    });
+
+    $$('input[type="checkbox"]', panel).forEach(cb => {
+      cb.addEventListener("change", () => {
+        if(cb.checked) state.topics.add(cb.value); else state.topics.delete(cb.value);
+        updateLabel();
+        render();
+      });
+    });
+    $("#topicsClearBtn").addEventListener("click", () => {
+      state.topics.clear();
+      $$('input[type="checkbox"]', panel).forEach(cb => { cb.checked = false; });
+      updateLabel();
+      render();
+    });
+  })();
+
   $$("thead th[data-key]").forEach(th => {
     th.addEventListener("click", () => {
       const key = th.dataset.key;

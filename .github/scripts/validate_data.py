@@ -9,6 +9,7 @@ Checks:
 - `deadline` is null or a YYYY-MM-DD string
 - `lowEffort` is true, false, or null
 - `url` looks like an http(s) link
+- `topics` is a non-empty list drawn from `meta.topics`
 - no duplicate (name, url) pairs
 """
 import json
@@ -17,7 +18,7 @@ import sys
 from pathlib import Path
 
 DATA_PATH = Path(__file__).resolve().parent.parent.parent / "data.json"
-REQUIRED_FIELDS = ["name", "url", "city", "deadline", "pages", "lowEffort", "lowEffortNote", "scope", "status"]
+REQUIRED_FIELDS = ["name", "url", "city", "deadline", "pages", "lowEffort", "lowEffortNote", "scope", "status", "topics"]
 VALID_CITIES = {"Sydney", "Paris", "Atlanta"}
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
@@ -45,6 +46,10 @@ def main():
     if not isinstance(workshops, list) or not workshops:
         fail("'workshops' must be a non-empty list")
 
+    valid_topics = set(payload.get("meta", {}).get("topics", []))
+    if not valid_topics:
+        fail("meta.topics must list the allowed topic taxonomy")
+
     seen = set()
     errors = []
 
@@ -70,6 +75,14 @@ def main():
         url = w.get("url", "")
         if not str(url).startswith("http"):
             errors.append(f"[{label}] url '{url}' does not look like a link")
+
+        topics = w.get("topics")
+        if not isinstance(topics, list) or not topics:
+            errors.append(f"[{label}] topics must be a non-empty list")
+        else:
+            unknown = [t for t in topics if t not in valid_topics]
+            if unknown:
+                errors.append(f"[{label}] topics not in meta.topics taxonomy: {unknown}")
 
         key = (w.get("name"), w.get("url"))
         if key in seen:
