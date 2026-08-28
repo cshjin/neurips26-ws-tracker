@@ -124,6 +124,21 @@
   }
   .eyebrow a{ color:var(--muted); }
   .eyebrow a:hover{ color:var(--accent); }
+  .theme-toggle{
+    font:inherit;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:.72rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+    background:none;
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:.15rem .65rem;
+    cursor:pointer;
+    line-height:1.6;
+  }
+  .theme-toggle:hover{ color:var(--ink); border-color:var(--accent); }
   h1{
     font-family:"Instrument Serif", Georgia, serif;
     font-weight:400;
@@ -323,6 +338,17 @@
     input[type="search"]{ min-width:160px; }
   }
 </style>
+<script>
+  // Applied before first paint, so a saved theme choice never flashes the
+  // wrong colors for a moment. The toggle button itself (which reads/writes
+  // this) is wired up later, once it exists in the body.
+  (function(){
+    try{
+      var pref = localStorage.getItem("theme-preference");
+      if(pref === "light" || pref === "dark") document.documentElement.setAttribute("data-theme", pref);
+    }catch(e){ /* localStorage unavailable (privacy mode, etc.) — fall back to system theme */ }
+  })();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -332,6 +358,7 @@
       <span>NeurIPS 2026 &middot; Sydney / Paris / Atlanta</span>
       <a href="https://blog.neurips.cc/2026/08/10/announcing-the-neurips-2026-workshops/" target="_blank" rel="noopener">official announcement ↗</a>
       <a href="https://github.com/cshjin/neurips26-ws-tracker" target="_blank" rel="noopener" id="repoLink">source & contribute ↗</a>
+      <button type="button" class="theme-toggle" id="themeToggle" aria-label="Switch color theme">Theme: Auto</button>
     </span>
     <h1>All 102 NeurIPS 2026 <em>workshops</em>, in one table.</h1>
     <p class="sub">Deadlines, page limits, and which CFPs have a low-effort submission track (position papers, tiny papers, extended abstracts, or an explicit welcome for negative / preliminary / work-in-progress results). Community-maintained &mdash; see <a href="README.md">README</a> for how to fix or add an entry.</p>
@@ -387,6 +414,36 @@
 </div>
 
 <script>
+function initThemeToggle(){
+  const KEY = "theme-preference";
+  const ORDER = ["system", "light", "dark"];
+  const root = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+
+  function read(){
+    try{
+      const v = localStorage.getItem(KEY);
+      return ORDER.includes(v) ? v : "system";
+    }catch(e){ return "system"; }
+  }
+  function apply(pref){
+    if(pref === "system") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", pref);
+    btn.textContent = "Theme: " + pref.charAt(0).toUpperCase() + pref.slice(1);
+    btn.setAttribute("aria-pressed", String(pref !== "system"));
+  }
+
+  let pref = read();
+  apply(pref);
+
+  btn.addEventListener("click", () => {
+    pref = ORDER[(ORDER.indexOf(pref) + 1) % ORDER.length];
+    try{ localStorage.setItem(KEY, pref); }catch(e){ /* ignore */ }
+    apply(pref);
+  });
+}
+initThemeToggle();
+
 async function boot(){
   const res = await fetch("data.json", {cache:"no-store"});
   const payload = await res.json();
@@ -398,16 +455,21 @@ async function boot(){
 
   function daysLeft(iso){
     if(!iso) return null;
-    // Compare whole local calendar days, not exact timestamps: subtracting
-    // "now" from "deadline 23:59" and dividing by 86400000 rounds a
-    // just-passed deadline (e.g. yesterday) to JS's -0, and -0 < 0 is
-    // false while -0 === 0 is true — so it silently displayed as "today"
-    // for the entire day after it actually passed.
-    const now = new Date();
-    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    // Deadlines are AoE (Anywhere on Earth, UTC-12), so "2026-08-27 AoE"
+    // stays open until it stops being Aug 27 in EVERY timezone — i.e.
+    // until 23:59:59 UTC-12, which is 11:59:59 UTC the *next* day. Comparing
+    // against the viewer's local calendar date instead (as an earlier
+    // version did) marks it "passed" as soon as the viewer's own clock
+    // rolls over past midnight — up to ~20 hours early for anyone east of
+    // UTC (China, Europe, Sydney...). Comparing real UTC instants instead
+    // makes the result timezone-independent: everyone sees the same
+    // countdown to the same actual cutoff, wherever they are.
     const [y, m, d] = iso.split("-").map(Number);
-    const deadlineMidnight = new Date(y, m - 1, d);
-    return Math.round((deadlineMidnight - todayMidnight) / 86400000);
+    const deadlineUTC = Date.UTC(y, m - 1, d + 1, 11, 59, 59);
+    const diffMs = deadlineUTC - Date.now();
+    // floor (not round/ceil) so a fractional day remaining, or just passed,
+    // never lands on JS's -0 — which fails `< 0` but passes `=== 0`.
+    return Math.floor(diffMs / 86400000);
   }
   function urgencyOf(w){
     if(!w.deadline) return "unk";
@@ -499,11 +561,9 @@ async function boot(){
 
     const total = DATA.length;
     const shown = rows.length;
-    const withTrack = DATA.filter(r => r.lowEffort === true).length;
     const upcoming = DATA.filter(r => r.deadline && daysLeft(r.deadline) >= 0).sort((a,b)=>daysLeft(a.deadline)-daysLeft(b.deadline))[0];
     $("#statline").innerHTML = `
       <span class="stat"><b>${total}</b> workshops tracked</span>
-      <span class="stat"><b>${withTrack}</b> with a low-effort track</span>
       <span class="stat">showing <b>${shown}</b></span>
       ${upcoming ? `<span class="stat">next deadline in <b>${fmtDays(upcoming)}</b> (${escapeHtml(upcoming.name)})</span>` : ""}
     `;
