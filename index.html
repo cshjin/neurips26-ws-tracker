@@ -296,18 +296,6 @@
   .track.dim{ color:var(--muted); font-weight:400; }
   .tracknote{ color:var(--muted); font-size:.8rem; display:block; margin-top:.15rem; }
   .scope{ color:var(--muted); max-width:32ch; }
-  .status-chip{
-    display:inline-block;
-    font-family:"IBM Plex Mono", ui-monospace, monospace;
-    font-size:.72rem;
-    padding:.14rem .5rem;
-    border-radius:999px;
-    background:var(--surface-alt);
-    border:1px solid var(--border);
-    color:var(--muted);
-    white-space:nowrap;
-  }
-
   .empty{
     padding:2.4rem 1rem;
     text-align:center;
@@ -375,15 +363,6 @@
         <button class="chip" data-region="Atlanta">Atlanta</button>
       </div>
     </div>
-    <div class="field-group">
-      <span class="field-label">Low-effort track</span>
-      <div class="chipset" id="effortChips">
-        <button class="chip active" data-effort="all">All</button>
-        <button class="chip" data-effort="yes">Has one</button>
-        <button class="chip" data-effort="no">Full papers only</button>
-        <button class="chip" data-effort="unknown">Not found</button>
-      </div>
-    </div>
   </div>
 
   <div class="panel table-shell">
@@ -394,7 +373,6 @@
           <th data-key="name">Workshop</th>
           <th data-key="pages">Submission tracks</th>
           <th data-key="scope">Scope</th>
-          <th data-key="status">Status</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -451,7 +429,7 @@ async function boot(){
     return (s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   }
 
-  let state = { q:"", urgency:"all", region:"all", effort:"all", sortKey:"deadline", sortDir:1 };
+  let state = { q:"", urgency:"all", region:"all", sortKey:"deadline", sortDir:1 };
 
   function applyFilters(){
     let rows = DATA.slice();
@@ -464,13 +442,6 @@ async function boot(){
     }
     if(state.region !== "all"){
       rows = rows.filter(r => r.city === state.region);
-    }
-    if(state.effort === "yes"){
-      rows = rows.filter(r => r.lowEffort === true);
-    } else if(state.effort === "no"){
-      rows = rows.filter(r => r.lowEffort === false);
-    } else if(state.effort === "unknown"){
-      rows = rows.filter(r => r.lowEffort === null);
     }
     rows.sort((a,b) => {
       let av, bv;
@@ -517,7 +488,6 @@ async function boot(){
           ${r.lowEffortNote ? `<span class="tracknote">${escapeHtml(r.lowEffortNote)}</span>` : ""}
         </td>
         <td class="scope">${escapeHtml(r.scope)}</td>
-        <td><span class="status-chip">${escapeHtml(r.status || "CFP open")}</span></td>
       `;
       tbody.appendChild(tr);
     });
@@ -549,14 +519,6 @@ async function boot(){
       $$("#regionChips .chip").forEach(c => c.classList.remove("active"));
       chip.classList.add("active");
       state.region = chip.dataset.region;
-      render();
-    });
-  });
-  $$("#effortChips .chip").forEach(chip => {
-    chip.addEventListener("click", () => {
-      $$("#effortChips .chip").forEach(c => c.classList.remove("active"));
-      chip.classList.add("active");
-      state.effort = chip.dataset.effort;
       render();
     });
   });
